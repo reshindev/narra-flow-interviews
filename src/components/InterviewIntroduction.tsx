@@ -70,192 +70,131 @@ const InterviewIntroduction = () => {
   };
 
   return (
-    <div className="min-h-screen bg-interview-bg">
-      {/* Header */}
-      <div className="bg-primary text-primary-foreground py-6">
-        <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold">NarraFlow Interviews</h1>
-              <p className="text-primary-foreground/80 mt-1">Automated Interview Platform</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-6">
+      <div className="max-w-6xl w-full grid lg:grid-cols-2 gap-12 items-center">
+        
+        {/* Left Panel - Female Avatar */}
+        <div className="flex flex-col items-center text-center">
+          <div className="relative mb-8">
+            <div className="w-80 h-80 bg-gradient-to-br from-slate-200 to-slate-300 rounded-full flex items-center justify-center shadow-2xl">
+              <div className="w-72 h-72 bg-white rounded-full flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/lovable-uploads/75c387e3-3826-4a49-b77a-43b8e85d2165.png" 
+                  alt="Virtual Interviewer"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-            <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-              Introduction Phase
-            </Badge>
+            {isPlaying && (
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse"></div>
+            )}
+          </div>
+          
+          <h2 className="text-3xl font-bold text-foreground mb-2">Virtual Interviewer</h2>
+          <p className="text-muted-foreground text-lg mb-8">Ready to guide you through your interview</p>
+          
+          <div className="flex space-x-4">
+            <Button 
+              onClick={handlePlayPause}
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg px-8"
+            >
+              {isPlaying ? (
+                <>
+                  <Pause className="w-5 h-5 mr-2" />
+                  Pause
+                </>
+              ) : (
+                <>
+                  <Play className="w-5 h-5 mr-2" />
+                  Start Instructions
+                </>
+              )}
+            </Button>
+            
+            <Button 
+              onClick={handleReset}
+              variant="outline"
+              size="lg"
+              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8"
+            >
+              Reset
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
-          
-          {/* Left Panel - Narrator & Controls */}
-          <div className="space-y-6">
-            <Card className="p-8 text-center bg-white shadow-lg border-0">
-              <div className="mb-6">
-                <div className="w-32 h-32 bg-gradient-to-br from-primary to-narrator-accent rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center">
-                    <Volume2 className="w-12 h-12 text-primary" />
-                  </div>
-                </div>
-                <h2 className="text-2xl font-semibold text-foreground mb-2">Virtual Interviewer</h2>
-                <p className="text-muted-foreground">Your AI-powered interview assistant</p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex justify-center space-x-4">
-                  <Button 
-                    onClick={handlePlayPause}
-                    size="lg"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-                  >
-                    {isPlaying ? (
-                      <>
-                        <Pause className="w-5 h-5 mr-2" />
-                        Pause Instructions
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-5 h-5 mr-2" />
-                        Start Instructions
-                      </>
-                    )}
-                  </Button>
+        {/* Right Panel - Flowing Transcript */}
+        <div className="space-y-6">
+          <Card className="bg-white border-0 shadow-2xl overflow-hidden">
+            <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-6">
+              <h3 className="font-semibold text-2xl">Interview Instructions</h3>
+              <p className="text-primary-foreground/90 mt-2">Please listen carefully to the following instructions</p>
+            </div>
+            
+            <div className="h-96 overflow-hidden relative bg-white">
+              <div className="absolute inset-0 p-6">
+                <div className="h-full relative">
+                  {visibleLines.map((line, index) => (
+                    <div
+                      key={line.id}
+                      className={`absolute w-full transition-all duration-1000 ease-out ${
+                        index === visibleLines.length - 1 ? 'animate-flow-up' : ''
+                      }`}
+                      style={{
+                        bottom: `${index * 70}px`,
+                        transform: index === visibleLines.length - 1 ? 'translateY(100%)' : 'translateY(0)'
+                      }}
+                    >
+                      <div className={`p-4 rounded-lg mb-4 transition-all duration-300 ${
+                        line.isHighlighted 
+                          ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-md' 
+                          : 'bg-slate-50 text-foreground'
+                      }`}>
+                        <p className="text-base leading-relaxed">{line.text}</p>
+                        {line.isHighlighted && (
+                          <div className="mt-3">
+                            <Badge variant="destructive" className="bg-red-500 text-white text-xs">
+                              Important
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                   
-                  <Button 
-                    onClick={handleReset}
-                    variant="outline"
-                    size="lg"
-                    className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                  >
-                    Reset
-                  </Button>
+                  {visibleLines.length === 0 && (
+                    <div className="flex items-center justify-center h-full text-muted-foreground">
+                      <div className="text-center">
+                        <Volume2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg">Click "Start Instructions" to begin</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-                  <Mic className="w-4 h-4" />
-                  <span>Ensure your microphone is enabled</span>
-                </div>
-              </div>
-            </Card>
-
-            {/* Status Card */}
-            <Card className="p-6 bg-white border-0 shadow-lg">
-              <h3 className="font-semibold mb-4 text-foreground">Interview Setup</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Audio System</span>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
-                    Ready
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Camera Access</span>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700 border-green-200">
-                    Enabled
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Recording Status</span>
-                  <Badge variant="outline" className="border-yellow-300 text-yellow-700">
-                    Standby
-                  </Badge>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Right Panel - Flowing Transcript */}
-          <div className="space-y-6">
-            <Card className="bg-white border-0 shadow-lg overflow-hidden">
-              <div className="bg-gradient-to-r from-primary to-narrator-accent text-white p-4">
-                <h3 className="font-semibold text-lg">Live Transcript</h3>
-                <p className="text-primary-foreground/80 text-sm">Instructions will appear here as they are narrated</p>
               </div>
               
-              <div className="h-96 overflow-hidden relative bg-transcript-bg">
-                <div className="absolute inset-0 p-6">
-                  <div className="h-full relative">
-                    {visibleLines.map((line, index) => (
-                      <div
-                        key={line.id}
-                        className={`absolute w-full transition-all duration-1000 ease-out ${
-                          index === visibleLines.length - 1 ? 'animate-flow-up' : ''
-                        }`}
-                        style={{
-                          bottom: `${index * 60}px`,
-                          transform: index === visibleLines.length - 1 ? 'translateY(100%)' : 'translateY(0)'
-                        }}
-                      >
-                        <div className={`p-4 rounded-lg mb-4 transition-all duration-300 ${
-                          line.isHighlighted 
-                            ? 'bg-red-50 border-l-4 border-highlight text-highlight font-medium shadow-md' 
-                            : 'bg-gray-50 text-foreground'
-                        }`}>
-                          <p className="text-sm leading-relaxed">{line.text}</p>
-                          {line.isHighlighted && (
-                            <div className="mt-2">
-                              <Badge variant="destructive" className="bg-highlight text-white text-xs">
-                                Important
-                              </Badge>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {visibleLines.length === 0 && (
-                      <div className="flex items-center justify-center h-full text-muted-foreground">
-                        <div className="text-center">
-                          <Volume2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                          <p>Click "Start Instructions" to begin</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Gradient overlay for smooth transitions */}
-                <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-transcript-bg to-transparent pointer-events-none"></div>
-                <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-transcript-bg to-transparent pointer-events-none"></div>
-              </div>
-            </Card>
-
-            {/* Progress Indicator */}
-            <Card className="p-4 bg-white border-0 shadow-lg">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-foreground">Instruction Progress</span>
-                <span className="text-sm text-muted-foreground">
-                  {currentTranscriptIndex + 1} / {transcriptLines.length}
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-primary h-2 rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${((currentTranscriptIndex + 1) / transcriptLines.length) * 100}%` }}
-                ></div>
-              </div>
-            </Card>
-          </div>
-        </div>
-
-        {/* Bottom Action Bar */}
-        <Card className="mt-8 p-6 bg-white border-0 shadow-lg">
-          <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-semibold text-foreground">Ready to Begin?</h4>
-              <p className="text-sm text-muted-foreground">Complete the instructions to proceed to your interview</p>
+              {/* Gradient overlay for smooth transitions */}
+              <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+              <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
             </div>
+          </Card>
+
+          {/* Start Interview Button */}
+          <div className="text-center">
             <Button 
               size="lg"
               disabled={currentTranscriptIndex < transcriptLines.length - 1}
-              className="bg-green-600 hover:bg-green-700 text-white shadow-lg disabled:opacity-50"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg disabled:opacity-50 px-12 py-4 text-lg"
             >
               Start Interview
             </Button>
+            {currentTranscriptIndex < transcriptLines.length - 1 && (
+              <p className="text-sm text-muted-foreground mt-3">
+                Please complete the instructions to proceed
+              </p>
+            )}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );
