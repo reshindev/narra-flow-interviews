@@ -193,7 +193,7 @@ const InterviewIntroduction = () => {
             </div>
             
             <div className="flex-1 overflow-hidden relative bg-white">
-              <div className="absolute inset-0 p-4">
+              <div className="absolute inset-0 p-4 overflow-y-auto">
                 <div className="space-y-3">
                   {transcriptLines.map((line, index) => {
                     const isCurrentLine = index === currentTranscriptIndex && isPlaying;
