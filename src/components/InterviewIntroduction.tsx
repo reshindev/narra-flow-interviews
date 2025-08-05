@@ -83,8 +83,8 @@ const InterviewIntroduction = () => {
           </div>
           
           {/* Avatar with Enhanced Design */}
-          <div className="relative z-10">
-            <div className="relative mb-6">
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="relative mb-6 flex justify-center">
               <div className="w-48 h-48 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full flex items-center justify-center shadow-2xl relative">
                 <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-inner">
                   <img 
@@ -193,11 +193,10 @@ const InterviewIntroduction = () => {
             </div>
             
             <div className="flex-1 overflow-hidden relative bg-white">
-              <div className="absolute inset-0 p-4 overflow-y-auto">
+              <div className="absolute inset-0 p-4">
                 <div className="space-y-3">
-                  {transcriptLines.slice(scrollPosition, scrollPosition + 5).map((line, index) => {
-                    const actualIndex = scrollPosition + index;
-                    const isCurrentLine = actualIndex === currentTranscriptIndex && isPlaying;
+                  {transcriptLines.map((line, index) => {
+                    const isCurrentLine = index === currentTranscriptIndex && isPlaying;
                     
                     return (
                       <div
