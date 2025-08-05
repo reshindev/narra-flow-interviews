@@ -70,8 +70,8 @@ const InterviewIntroduction = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
-      <div className="max-w-6xl mx-auto h-screen grid lg:grid-cols-3 gap-8 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+      <div className="max-w-6xl mx-auto h-screen grid lg:grid-cols-3 gap-8 py-4">
         
         {/* Left Panel - Enhanced Avatar Section */}
         <div className="lg:col-span-1 flex flex-col items-center justify-center text-center space-y-6 relative">
@@ -84,9 +84,9 @@ const InterviewIntroduction = () => {
           
           {/* Avatar with Enhanced Design */}
           <div className="relative z-10 flex flex-col items-center">
-            <div className="relative mb-6 flex justify-center">
-              <div className="w-48 h-48 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full flex items-center justify-center shadow-2xl relative">
-                <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-inner">
+            <div className="relative mb-8 flex justify-center">
+              <div className="w-56 h-56 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full flex items-center justify-center shadow-2xl relative">
+                <div className="w-48 h-48 bg-white rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-inner">
                   <img 
                     src="/lovable-uploads/75c387e3-3826-4a49-b77a-43b8e85d2165.png" 
                     alt="Virtual Interviewer"
@@ -164,7 +164,7 @@ const InterviewIntroduction = () => {
 
         {/* Right Panel - All Instructions with Navigation */}
         <div className="lg:col-span-2 flex flex-col justify-center">
-          <Card className="bg-white border-0 shadow-xl overflow-hidden h-96 mb-6 relative">
+          <Card className="bg-white border-0 shadow-xl overflow-hidden h-[32rem] mb-6 relative">
             <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4 flex justify-between items-center">
               <div>
                 <h3 className="font-semibold text-lg">Interview Instructions</h3>
