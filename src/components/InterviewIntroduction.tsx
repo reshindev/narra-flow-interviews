@@ -70,65 +70,104 @@ const InterviewIntroduction = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <div className="max-w-7xl mx-auto h-screen grid lg:grid-cols-5 gap-6 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+      <div className="max-w-6xl mx-auto h-screen grid lg:grid-cols-3 gap-8 py-6">
         
-        {/* Left Panel - Female Avatar */}
-        <div className="lg:col-span-2 flex flex-col items-center justify-center text-center">
-          <div className="relative mb-6">
-            <div className="w-64 h-64 bg-gradient-to-br from-primary/20 to-primary/30 rounded-full flex items-center justify-center shadow-xl">
-              <div className="w-56 h-56 bg-white rounded-full flex items-center justify-center overflow-hidden border-4 border-white">
-                <img 
-                  src="/lovable-uploads/75c387e3-3826-4a49-b77a-43b8e85d2165.png" 
-                  alt="Virtual Interviewer"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-            {isPlaying && (
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full animate-pulse shadow-lg"></div>
-            )}
+        {/* Left Panel - Enhanced Avatar Section */}
+        <div className="lg:col-span-1 flex flex-col items-center justify-center text-center space-y-6">
+          {/* Decorative Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full blur-xl"></div>
+            <div className="absolute bottom-32 right-8 w-16 h-16 bg-primary/5 rounded-full blur-lg"></div>
+            <div className="absolute top-1/2 left-4 w-12 h-12 bg-primary/15 rounded-full blur-md"></div>
           </div>
           
-          <h2 className="text-2xl font-bold text-foreground mb-3">Virtual Interviewer</h2>
-          <p className="text-muted-foreground mb-6 text-center max-w-sm">Ready to guide you through your interview process</p>
-          
-          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
-            <Button 
-              onClick={handlePlayPause}
-              size="default"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg flex-1"
-            >
-              {isPlaying ? (
-                <>
-                  <Pause className="w-4 h-4 mr-2" />
-                  Pause
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 mr-2" />
-                  Start Instructions
-                </>
-              )}
-            </Button>
+          {/* Avatar with Enhanced Design */}
+          <div className="relative z-10">
+            <div className="relative mb-6">
+              <div className="w-48 h-48 bg-gradient-to-br from-primary/20 to-primary/40 rounded-full flex items-center justify-center shadow-2xl relative">
+                <div className="w-40 h-40 bg-white rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-inner">
+                  <img 
+                    src="/lovable-uploads/75c387e3-3826-4a49-b77a-43b8e85d2165.png" 
+                    alt="Virtual Interviewer"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* Animated Ring */}
+                <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-pulse"></div>
+                {/* Recording Indicator */}
+                {isPlaying && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full animate-pulse shadow-lg flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                  </div>
+                )}
+              </div>
+            </div>
             
-            <Button 
-              onClick={handleReset}
-              variant="outline"
-              size="default"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground flex-1"
-            >
-              Reset
-            </Button>
+            {/* Title and Description */}
+            <div className="space-y-3 mb-6">
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                AI Interviewer
+              </h2>
+              <p className="text-muted-foreground text-sm max-w-xs mx-auto leading-relaxed">
+                Your professional virtual interviewer will guide you through the process
+              </p>
+            </div>
+            
+            {/* Enhanced Control Buttons */}
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+              <Button 
+                onClick={handlePlayPause}
+                size="lg"
+                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-lg border-0 transition-all duration-300"
+              >
+                {isPlaying ? (
+                  <>
+                    <Pause className="w-5 h-5 mr-2" />
+                    Pause Instructions
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5 mr-2" />
+                    Start Instructions
+                  </>
+                )}
+              </Button>
+              
+              <Button 
+                onClick={handleReset}
+                variant="outline"
+                size="default"
+                className="border-2 border-primary/30 text-primary hover:bg-primary/5 hover:border-primary/50 transition-all duration-300"
+              >
+                Reset
+              </Button>
+            </div>
+            
+            {/* Progress Indicator */}
+            <div className="mt-6 w-full max-w-xs">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs text-muted-foreground">Progress</span>
+                <span className="text-xs text-primary font-medium">
+                  {Math.round((currentTranscriptIndex / transcriptLines.length) * 100)}%
+                </span>
+              </div>
+              <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
+                  style={{ width: `${(currentTranscriptIndex / transcriptLines.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right Panel - Flowing Transcript */}
-        <div className="lg:col-span-3 flex flex-col h-full">
-          <Card className="bg-white border-0 shadow-xl overflow-hidden flex-1">
+        {/* Right Panel - Compact Transcript */}
+        <div className="lg:col-span-2 flex flex-col justify-center">
+          <Card className="bg-white border-0 shadow-xl overflow-hidden h-96 mb-6">
             <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4">
-              <h3 className="font-semibold text-xl">Interview Instructions</h3>
-              <p className="text-primary-foreground/90 mt-1 text-sm">Please listen carefully to the following instructions</p>
+              <h3 className="font-semibold text-lg">Interview Instructions</h3>
+              <p className="text-primary-foreground/90 mt-1 text-xs">Listen carefully to proceed</p>
             </div>
             
             <div className="flex-1 overflow-hidden relative bg-white">
@@ -141,11 +180,11 @@ const InterviewIntroduction = () => {
                         index === visibleLines.length - 1 ? 'animate-flow-up' : ''
                       }`}
                       style={{
-                        bottom: `${index * 60}px`,
+                        bottom: `${index * 55}px`,
                         transform: index === visibleLines.length - 1 ? 'translateY(100%)' : 'translateY(0)'
                       }}
                     >
-                      <div className={`p-3 rounded-lg mb-3 transition-all duration-300 ${
+                      <div className={`p-3 rounded-lg mb-2 transition-all duration-300 ${
                         line.isHighlighted 
                           ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm' 
                           : 'bg-slate-50 text-foreground'
@@ -165,8 +204,8 @@ const InterviewIntroduction = () => {
                   {visibleLines.length === 0 && (
                     <div className="flex items-center justify-center h-full text-muted-foreground">
                       <div className="text-center">
-                        <Volume2 className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                        <p className="text-base">Click "Start Instructions" to begin</p>
+                        <Volume2 className="w-10 h-10 mx-auto mb-3 opacity-50" />
+                        <p className="text-sm">Click "Start Instructions" to begin</p>
                       </div>
                     </div>
                   )}
@@ -174,23 +213,24 @@ const InterviewIntroduction = () => {
               </div>
               
               {/* Gradient overlay for smooth transitions */}
-              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-              <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+              <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
             </div>
           </Card>
 
           {/* Start Interview Button */}
-          <div className="text-center mt-4">
+          <div className="text-center">
             <Button 
               size="lg"
               disabled={currentTranscriptIndex < transcriptLines.length - 1}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg disabled:opacity-50 px-8 py-3"
+              className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-xl disabled:opacity-50 disabled:cursor-not-allowed px-12 py-4 text-lg font-semibold transition-all duration-300"
             >
+              <Mic className="w-5 h-5 mr-2" />
               Start Interview
             </Button>
             {currentTranscriptIndex < transcriptLines.length - 1 && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Please complete the instructions to proceed
+              <p className="text-xs text-muted-foreground mt-3">
+                Complete the instructions to proceed
               </p>
             )}
           </div>
