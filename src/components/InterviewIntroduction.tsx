@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, Pause, Volume2, Mic } from 'lucide-react';
+import { Play, Pause, Volume2, Mic, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface TranscriptLine {
   id: number;
@@ -14,7 +14,7 @@ interface TranscriptLine {
 const InterviewIntroduction = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTranscriptIndex, setCurrentTranscriptIndex] = useState(0);
-  const [visibleLines, setVisibleLines] = useState<TranscriptLine[]>([]);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const transcriptLines: TranscriptLine[] = [
     { id: 1, text: "Welcome to your automated interview session.", isHighlighted: false, timestamp: 0 },
@@ -36,19 +36,13 @@ const InterviewIntroduction = () => {
       interval = setInterval(() => {
         setCurrentTranscriptIndex((prev) => {
           if (prev < transcriptLines.length - 1) {
-            const nextLine = transcriptLines[prev + 1];
-            setVisibleLines((prevLines) => {
-              const newLines = [...prevLines, nextLine];
-              // Keep only the last 4 lines visible
-              return newLines.slice(-4);
-            });
             return prev + 1;
           } else {
             setIsPlaying(false);
             return prev;
           }
         });
-      }, 3000); // Show new line every 3 seconds
+      }, 3000); // Move to next instruction every 3 seconds
     }
 
     return () => clearInterval(interval);
@@ -56,8 +50,6 @@ const InterviewIntroduction = () => {
 
   const handlePlayPause = () => {
     if (!isPlaying && currentTranscriptIndex === 0) {
-      // Start from beginning
-      setVisibleLines([transcriptLines[0]]);
       setCurrentTranscriptIndex(0);
     }
     setIsPlaying(!isPlaying);
@@ -66,7 +58,15 @@ const InterviewIntroduction = () => {
   const handleReset = () => {
     setIsPlaying(false);
     setCurrentTranscriptIndex(0);
-    setVisibleLines([]);
+    setScrollPosition(0);
+  };
+
+  const handleScrollUp = () => {
+    setScrollPosition(prev => Math.max(0, prev - 1));
+  };
+
+  const handleScrollDown = () => {
+    setScrollPosition(prev => Math.min(transcriptLines.length - 5, prev + 1));
   };
 
   return (
@@ -74,7 +74,7 @@ const InterviewIntroduction = () => {
       <div className="max-w-6xl mx-auto h-screen grid lg:grid-cols-3 gap-8 py-6">
         
         {/* Left Panel - Enhanced Avatar Section */}
-        <div className="lg:col-span-1 flex flex-col items-center justify-center text-center space-y-6">
+        <div className="lg:col-span-1 flex flex-col items-center justify-center text-center space-y-6 relative">
           {/* Decorative Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full blur-xl"></div>
@@ -162,59 +162,76 @@ const InterviewIntroduction = () => {
           </div>
         </div>
 
-        {/* Right Panel - Compact Transcript */}
+        {/* Right Panel - All Instructions with Navigation */}
         <div className="lg:col-span-2 flex flex-col justify-center">
-          <Card className="bg-white border-0 shadow-xl overflow-hidden h-96 mb-6">
-            <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4">
-              <h3 className="font-semibold text-lg">Interview Instructions</h3>
-              <p className="text-primary-foreground/90 mt-1 text-xs">Listen carefully to proceed</p>
+          <Card className="bg-white border-0 shadow-xl overflow-hidden h-96 mb-6 relative">
+            <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4 flex justify-between items-center">
+              <div>
+                <h3 className="font-semibold text-lg">Interview Instructions</h3>
+                <p className="text-primary-foreground/90 mt-1 text-xs">Listen carefully to proceed</p>
+              </div>
+              <div className="flex flex-col gap-1">
+                <Button
+                  onClick={handleScrollUp}
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                  disabled={scrollPosition === 0}
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={handleScrollDown}
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                  disabled={scrollPosition >= transcriptLines.length - 5}
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
             
             <div className="flex-1 overflow-hidden relative bg-white">
-              <div className="absolute inset-0 p-4">
-                <div className="h-full relative">
-                  {visibleLines.map((line, index) => (
-                    <div
-                      key={line.id}
-                      className={`absolute w-full transition-all duration-1000 ease-out ${
-                        index === visibleLines.length - 1 ? 'animate-flow-up' : ''
-                      }`}
-                      style={{
-                        bottom: `${index * 55}px`,
-                        transform: index === visibleLines.length - 1 ? 'translateY(100%)' : 'translateY(0)'
-                      }}
-                    >
-                      <div className={`p-3 rounded-lg mb-2 transition-all duration-300 ${
-                        line.isHighlighted 
-                          ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm' 
-                          : 'bg-slate-50 text-foreground'
-                      }`}>
-                        <p className="text-sm leading-relaxed">{line.text}</p>
-                        {line.isHighlighted && (
-                          <div className="mt-2">
-                            <Badge variant="destructive" className="bg-red-500 text-white text-xs">
-                              Important
-                            </Badge>
+              <div className="absolute inset-0 p-4 overflow-y-auto">
+                <div className="space-y-3">
+                  {transcriptLines.slice(scrollPosition, scrollPosition + 5).map((line, index) => {
+                    const actualIndex = scrollPosition + index;
+                    const isCurrentLine = actualIndex === currentTranscriptIndex && isPlaying;
+                    
+                    return (
+                      <div
+                        key={line.id}
+                        className={`p-3 rounded-lg transition-all duration-500 ${
+                          isCurrentLine
+                            ? 'bg-primary/10 border-l-4 border-primary text-primary shadow-md scale-[1.02] animate-pulse'
+                            : line.isHighlighted 
+                              ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm' 
+                              : 'bg-slate-50 text-foreground'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <p className="text-sm leading-relaxed flex-1">{line.text}</p>
+                          <div className="flex items-center gap-2 ml-3">
+                            {isCurrentLine && (
+                              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                            )}
+                            {line.isHighlighted && (
+                              <Badge variant="destructive" className="bg-red-500 text-white text-xs">
+                                Important
+                              </Badge>
+                            )}
                           </div>
-                        )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  
-                  {visibleLines.length === 0 && (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
-                      <div className="text-center">
-                        <Volume2 className="w-10 h-10 mx-auto mb-3 opacity-50" />
-                        <p className="text-sm">Click "Start Instructions" to begin</p>
-                      </div>
-                    </div>
-                  )}
+                    );
+                  })}
                 </div>
               </div>
               
               {/* Gradient overlay for smooth transitions */}
-              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-              <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+              <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
             </div>
           </Card>
 
