@@ -8,6 +8,7 @@ interface TranscriptLine {
   id: number;
   text: string;
   isHighlighted: boolean;
+  isEncouragement: boolean;
   timestamp: number;
 }
 
@@ -17,22 +18,24 @@ const InterviewIntroduction = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
 
   const transcriptLines: TranscriptLine[] = [
-    { id: 1, text: "Read these carefully", isHighlighted: true, timestamp: 0 },
-    { id: 2, text: "Instruction 1", isHighlighted: false, timestamp: 3000 },
-    { id: 3, text: "Instruction 2", isHighlighted: false, timestamp: 6000 },
-    { id: 4, text: "Instruction 3", isHighlighted: false, timestamp: 9000 },
-    { id: 5, text: "Instruction 4", isHighlighted: false, timestamp: 12000 },
-    { id: 6, text: "Welcome to your automated interview session.", isHighlighted: false, timestamp: 15000 },
-    { id: 7, text: "I am your virtual interviewer, and I will guide you through this process.", isHighlighted: false, timestamp: 18000 },
-    { id: 8, text: "Please ensure your microphone is working properly.", isHighlighted: true, timestamp: 21000 },
-    { id: 9, text: "This interview will be recorded for evaluation purposes.", isHighlighted: true, timestamp: 24000 },
-    { id: 10, text: "You will have 30 seconds to answer each question.", isHighlighted: true, timestamp: 27000 },
-    { id: 11, text: "Speak clearly and maintain eye contact with the camera.", isHighlighted: false, timestamp: 30000 },
-    { id: 12, text: "Take your time to think before responding.", isHighlighted: false, timestamp: 33000 },
-    { id: 13, text: "Do not worry if you need to pause - this is normal.", isHighlighted: false, timestamp: 36000 },
-    { id: 14, text: "The interview will begin automatically after these instructions.", isHighlighted: true, timestamp: 39000 },
-    { id: 15, text: "Good luck with your interview!", isHighlighted: false, timestamp: 42000 }
+    { id: 1, text: "Hi there! I'm Joanna, the SkillHunt chatbot.", isHighlighted: false, isEncouragement: false, timestamp: 0 },
+    { id: 2, text: "I'll be guiding you through today's interview.", isHighlighted: false, isEncouragement: false, timestamp: 3000 },
+    { id: 3, text: "Before we begin, please ensure you have a stable internet connection, as this interview can only be attempted once.", isHighlighted: true, isEncouragement: false, timestamp: 6000 },
+    { id: 4, text: "I'll ask questions based on your selected area of expertise.", isHighlighted: false, isEncouragement: false, timestamp: 9000 },
+    { id: 5, text: "You'll have a limited time to respond to each one.", isHighlighted: true, isEncouragement: false, timestamp: 12000 },
+    { id: 6, text: "If you're not sure of the answer, let the timer run out or click skip.", isHighlighted: true, isEncouragement: false, timestamp: 15000 },
+    { id: 7, text: "The next question will appear automatically.", isHighlighted: false, isEncouragement: false, timestamp: 18000 },
+    { id: 8, text: "Use your time wisely.", isHighlighted: false, isEncouragement: true, timestamp: 21000 },
+    { id: 9, text: "Please note, leaving this tab during the interview may result in warnings.", isHighlighted: true, isEncouragement: false, timestamp: 24000 },
+    { id: 10, text: "While you are out of focus, the recording will be paused and will only resume once you return to this tab.", isHighlighted: true, isEncouragement: false, timestamp: 27000 },
+    { id: 11, text: "Repeated actions will lead to immediate termination.", isHighlighted: true, isEncouragement: false, timestamp: 30000 },
+    { id: 12, text: "We'll be recording both audio and video for evaluation purposes.", isHighlighted: true, isEncouragement: false, timestamp: 33000 },
+    { id: 13, text: "Please do not close the window until all your responses have been successfully uploaded.", isHighlighted: true, isEncouragement: false, timestamp: 36000 },
+    { id: 14, text: "Good luck!", isHighlighted: false, isEncouragement: true, timestamp: 39000 },
+    { id: 15, text: "Click the Start Interview button below to begin.", isHighlighted: false, isEncouragement: false, timestamp: 42000 }
   ];
+
+  const VISIBLE_ITEMS = 5;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -53,6 +56,15 @@ const InterviewIntroduction = () => {
     return () => clearInterval(interval);
   }, [isPlaying, transcriptLines.length]);
 
+  // Auto-scroll to keep current line visible
+  useEffect(() => {
+    if (isPlaying && currentTranscriptIndex >= scrollPosition + VISIBLE_ITEMS) {
+      setScrollPosition(currentTranscriptIndex - VISIBLE_ITEMS + 1);
+    } else if (isPlaying && currentTranscriptIndex < scrollPosition) {
+      setScrollPosition(currentTranscriptIndex);
+    }
+  }, [currentTranscriptIndex, isPlaying, scrollPosition]);
+
   const handlePlayPause = () => {
     if (!isPlaying && currentTranscriptIndex === 0) {
       setCurrentTranscriptIndex(0);
@@ -71,8 +83,10 @@ const InterviewIntroduction = () => {
   };
 
   const handleScrollDown = () => {
-    setScrollPosition(prev => Math.min(transcriptLines.length - 5, prev + 1));
+    setScrollPosition(prev => Math.min(transcriptLines.length - VISIBLE_ITEMS, prev + 1));
   };
+
+  const visibleLines = transcriptLines.slice(scrollPosition, scrollPosition + VISIBLE_ITEMS);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
@@ -190,17 +204,18 @@ const InterviewIntroduction = () => {
                   size="sm"
                   variant="ghost"
                   className="h-8 w-8 p-0 text-white hover:bg-white/20"
-                  disabled={scrollPosition >= transcriptLines.length - 5}
+                  disabled={scrollPosition >= transcriptLines.length - VISIBLE_ITEMS}
                 >
                   <ChevronDown className="w-4 h-4" />
                 </Button>
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-4 bg-white">
-              <div className="space-y-3">
-                {transcriptLines.map((line, index) => {
-                  const isCurrentLine = index === currentTranscriptIndex && isPlaying;
+            <div className="flex-1 p-4 bg-white overflow-hidden">
+              <div className="space-y-3 h-full">
+                {visibleLines.map((line, index) => {
+                  const actualIndex = scrollPosition + index;
+                  const isCurrentLine = actualIndex === currentTranscriptIndex && isPlaying;
                   
                   return (
                     <div
@@ -209,8 +224,10 @@ const InterviewIntroduction = () => {
                         isCurrentLine
                           ? 'bg-primary/15 border-l-4 border-primary text-primary shadow-lg scale-[1.05] translate-x-2'
                           : line.isHighlighted 
-                            ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm' 
-                            : 'bg-slate-50 text-foreground'
+                            ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm'
+                            : line.isEncouragement
+                              ? 'bg-blue-50 border-l-4 border-blue-500 text-blue-700 font-medium shadow-sm'
+                              : 'bg-slate-50 text-foreground'
                       }`}
                     >
                       <div className="flex items-start justify-between">
@@ -222,6 +239,11 @@ const InterviewIntroduction = () => {
                           {line.isHighlighted && (
                             <Badge variant="destructive" className="bg-red-500 text-white text-xs">
                               Important
+                            </Badge>
+                          )}
+                          {line.isEncouragement && (
+                            <Badge className="bg-blue-500 text-white text-xs">
+                              Encouragement
                             </Badge>
                           )}
                         </div>
