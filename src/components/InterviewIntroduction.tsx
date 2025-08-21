@@ -169,7 +169,7 @@ const InterviewIntroduction = () => {
 
         {/* Right Panel - All Instructions with Navigation */}
         <div className="lg:col-span-2 flex flex-col justify-center">
-          <Card className="bg-white border-0 shadow-xl overflow-hidden h-[32rem] mb-6 relative">
+          <Card className="bg-white border-0 shadow-xl overflow-hidden h-[32rem] mb-6 flex flex-col">
             <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4 flex justify-between items-center">
               <div>
                 <h3 className="font-semibold text-lg">Interview Instructions</h3>
@@ -197,45 +197,39 @@ const InterviewIntroduction = () => {
               </div>
             </div>
             
-            <div className="flex-1 overflow-hidden relative bg-white">
-              <div className="absolute inset-0 p-4 overflow-y-auto">
-                <div className="space-y-3">
-                  {transcriptLines.map((line, index) => {
-                    const isCurrentLine = index === currentTranscriptIndex && isPlaying;
-                    
-                    return (
-                      <div
-                        key={line.id}
-                        className={`p-3 rounded-lg transition-all duration-500 ${
-                          isCurrentLine
-                            ? 'bg-primary/15 border-l-4 border-primary text-primary shadow-lg scale-[1.05] animate-pulse transform translate-x-2'
-                            : line.isHighlighted 
-                              ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm' 
-                              : 'bg-slate-50 text-foreground'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between">
-                          <p className="text-sm leading-relaxed flex-1">{line.text}</p>
-                          <div className="flex items-center gap-2 ml-3">
-                            {isCurrentLine && (
-                              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                            )}
-                            {line.isHighlighted && (
-                              <Badge variant="destructive" className="bg-red-500 text-white text-xs">
-                                Important
-                              </Badge>
-                            )}
-                          </div>
+            <div className="flex-1 overflow-y-auto p-4 bg-white">
+              <div className="space-y-3">
+                {transcriptLines.map((line, index) => {
+                  const isCurrentLine = index === currentTranscriptIndex && isPlaying;
+                  
+                  return (
+                    <div
+                      key={line.id}
+                      className={`p-3 rounded-lg transition-all duration-500 ${
+                        isCurrentLine
+                          ? 'bg-primary/15 border-l-4 border-primary text-primary shadow-lg scale-[1.05] translate-x-2'
+                          : line.isHighlighted 
+                            ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm' 
+                            : 'bg-slate-50 text-foreground'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between">
+                        <p className="text-sm leading-relaxed flex-1">{line.text}</p>
+                        <div className="flex items-center gap-2 ml-3">
+                          {isCurrentLine && (
+                            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                          )}
+                          {line.isHighlighted && (
+                            <Badge variant="destructive" className="bg-red-500 text-white text-xs">
+                              Important
+                            </Badge>
+                          )}
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  );
+                })}
               </div>
-              
-              {/* Gradient overlay for smooth transitions */}
-              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
-              <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white to-transparent pointer-events-none"></div>
             </div>
           </Card>
 
