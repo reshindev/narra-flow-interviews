@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play, Pause, Volume2, Mic, ChevronUp, ChevronDown } from 'lucide-react';
+import { Play, Pause, Volume2, Mic, ChevronUp, ChevronDown, MoreVertical } from 'lucide-react';
 
 interface TranscriptLine {
   id: number;
@@ -16,6 +16,7 @@ const InterviewIntroduction = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTranscriptIndex, setCurrentTranscriptIndex] = useState(0);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const transcriptLines: TranscriptLine[] = [
     { id: 1, text: "Hi there! I'm Joanna, the SkillHunt chatbot.", isHighlighted: false, isEncouragement: false, timestamp: 0 },
@@ -43,18 +44,39 @@ const InterviewIntroduction = () => {
     if (isPlaying) {
       interval = setInterval(() => {
         setCurrentTranscriptIndex((prev) => {
-          if (prev < transcriptLines.length - 1) {
-            return prev + 1;
+          const nextIndex = prev + 1;
+          if (nextIndex < transcriptLines.length) {
+            // Text-to-speech for the current line
+            if ('speechSynthesis' in window) {
+              speechSynthesis.cancel(); // Cancel any ongoing speech
+              const utterance = new SpeechSynthesisUtterance(transcriptLines[nextIndex].text);
+              utterance.rate = 0.9;
+              utterance.pitch = 1.1;
+              utterance.voice = speechSynthesis.getVoices().find(voice => 
+                voice.name.includes('Female') || voice.name.includes('Joanna') || voice.name.includes('Samantha')
+              ) || speechSynthesis.getVoices()[0];
+              speechRef.current = utterance;
+              speechSynthesis.speak(utterance);
+            }
+            return nextIndex;
           } else {
             setIsPlaying(false);
+            if ('speechSynthesis' in window) {
+              speechSynthesis.cancel();
+            }
             return prev;
           }
         });
-      }, 3000); // Move to next instruction every 3 seconds
+      }, 4000); // Slower, smoother timing - 4 seconds per instruction
     }
 
-    return () => clearInterval(interval);
-  }, [isPlaying, transcriptLines.length]);
+    return () => {
+      clearInterval(interval);
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+      }
+    };
+  }, [isPlaying, transcriptLines]);
 
   // Auto-scroll to keep current line visible
   useEffect(() => {
@@ -69,6 +91,9 @@ const InterviewIntroduction = () => {
     if (!isPlaying && currentTranscriptIndex === 0) {
       setCurrentTranscriptIndex(0);
     }
+    if (isPlaying && 'speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
     setIsPlaying(!isPlaying);
   };
 
@@ -76,6 +101,9 @@ const InterviewIntroduction = () => {
     setIsPlaying(false);
     setCurrentTranscriptIndex(0);
     setScrollPosition(0);
+    if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+    }
   };
 
   const handleScrollUp = () => {
@@ -90,10 +118,10 @@ const InterviewIntroduction = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
-      <div className="max-w-6xl mx-auto h-screen grid lg:grid-cols-3 gap-8 py-4">
+      <div className="max-w-7xl mx-auto h-screen grid lg:grid-cols-5 gap-6 py-4">
         
         {/* Left Panel - Enhanced Avatar Section */}
-        <div className="lg:col-span-1 flex flex-col items-center justify-center text-center space-y-6 relative">
+        <div className="lg:col-span-2 flex flex-col items-center justify-center text-center space-y-6 relative">
           {/* Decorative Background Elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-20 left-10 w-20 h-20 bg-primary/10 rounded-full blur-xl"></div>
@@ -182,7 +210,7 @@ const InterviewIntroduction = () => {
         </div>
 
         {/* Right Panel - All Instructions with Navigation */}
-        <div className="lg:col-span-2 flex flex-col justify-center">
+        <div className="lg:col-span-3 flex flex-col justify-center">
           <Card className="bg-white border-0 shadow-xl overflow-hidden h-[32rem] mb-6 flex flex-col">
             <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4 flex justify-between items-center">
               <div>
@@ -211,46 +239,71 @@ const InterviewIntroduction = () => {
               </div>
             </div>
             
-            <div className="flex-1 p-4 bg-white overflow-hidden">
-              <div className="space-y-3 h-full">
-                {visibleLines.map((line, index) => {
-                  const actualIndex = scrollPosition + index;
-                  const isCurrentLine = actualIndex === currentTranscriptIndex && isPlaying;
-                  
-                  return (
-                    <div
-                      key={line.id}
-                      className={`p-3 rounded-lg transition-all duration-500 ${
-                        isCurrentLine
-                          ? 'bg-primary/15 border-l-4 border-primary text-primary shadow-lg scale-[1.05] translate-x-2'
-                          : line.isHighlighted 
-                            ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm'
-                            : line.isEncouragement
-                              ? 'bg-blue-50 border-l-4 border-blue-500 text-blue-700 font-medium shadow-sm'
-                              : 'bg-slate-50 text-foreground'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <p className="text-sm leading-relaxed flex-1">{line.text}</p>
-                        <div className="flex items-center gap-2 ml-3">
-                          {isCurrentLine && (
-                            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                          )}
-                          {line.isHighlighted && (
-                            <Badge variant="destructive" className="bg-red-500 text-white text-xs">
-                              Important
-                            </Badge>
-                          )}
-                          {line.isEncouragement && (
-                            <Badge className="bg-blue-500 text-white text-xs">
-                              Encouragement
-                            </Badge>
-                          )}
+            <div className="flex-1 p-6 bg-white relative">
+              {/* Instruction counter and indicator */}
+              <div className="absolute top-4 right-4 text-xs text-muted-foreground bg-slate-100 px-2 py-1 rounded-full">
+                {scrollPosition + 1}-{Math.min(scrollPosition + VISIBLE_ITEMS, transcriptLines.length)} of {transcriptLines.length}
+              </div>
+              
+              {/* Scrollable container with contained pop-out effect */}
+              <div className="h-full overflow-hidden">
+                <div className="space-y-4 h-full pr-2">
+                  {visibleLines.map((line, index) => {
+                    const actualIndex = scrollPosition + index;
+                    const isCurrentLine = actualIndex === currentTranscriptIndex && isPlaying;
+                    
+                    return (
+                      <div
+                        key={line.id}
+                        className={`p-4 rounded-lg transition-all duration-700 ease-out relative ${
+                          isCurrentLine
+                            ? 'bg-primary/15 border-l-4 border-primary text-primary shadow-xl transform scale-105 z-10'
+                            : line.isHighlighted 
+                              ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm'
+                              : line.isEncouragement
+                                ? 'bg-blue-50 border-l-4 border-blue-500 text-blue-700 font-medium shadow-sm'
+                                : 'bg-slate-50 text-foreground'
+                        }`}
+                        style={isCurrentLine ? { 
+                          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                          transform: 'scale(1.02) translateX(8px)'
+                        } : {}}
+                      >
+                        <div className="flex items-start justify-between">
+                          <p className="text-sm leading-relaxed flex-1">{line.text}</p>
+                          <div className="flex items-center gap-2 ml-3">
+                            {isCurrentLine && (
+                              <>
+                                <Volume2 className="w-3 h-3 text-primary animate-pulse" />
+                                <div className="w-2 h-2 bg-primary rounded-full animate-ping"></div>
+                              </>
+                            )}
+                            {line.isHighlighted && (
+                              <Badge variant="destructive" className="bg-red-500 text-white text-xs">
+                                Important
+                              </Badge>
+                            )}
+                            {line.isEncouragement && (
+                              <Badge className="bg-blue-500 text-white text-xs">
+                                Encouragement
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
+                    );
+                  })}
+                </div>
+                
+                {/* More instructions indicator */}
+                {scrollPosition + VISIBLE_ITEMS < transcriptLines.length && (
+                  <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-1">
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground bg-white px-3 py-1 rounded-full shadow-sm border">
+                      <MoreVertical className="w-3 h-3" />
+                      <span>{transcriptLines.length - (scrollPosition + VISIBLE_ITEMS)} more below</span>
                     </div>
-                  );
-                })}
+                  </div>
+                )}
               </div>
             </div>
           </Card>
