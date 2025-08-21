@@ -17,16 +17,21 @@ const InterviewIntroduction = () => {
   const [scrollPosition, setScrollPosition] = useState(0);
 
   const transcriptLines: TranscriptLine[] = [
-    { id: 1, text: "Welcome to your automated interview session.", isHighlighted: false, timestamp: 0 },
-    { id: 2, text: "I am your virtual interviewer, and I will guide you through this process.", isHighlighted: false, timestamp: 3000 },
-    { id: 3, text: "Please ensure your microphone is working properly.", isHighlighted: true, timestamp: 6000 },
-    { id: 4, text: "This interview will be recorded for evaluation purposes.", isHighlighted: true, timestamp: 9000 },
-    { id: 5, text: "You will have 30 seconds to answer each question.", isHighlighted: true, timestamp: 12000 },
-    { id: 6, text: "Speak clearly and maintain eye contact with the camera.", isHighlighted: false, timestamp: 15000 },
-    { id: 7, text: "Take your time to think before responding.", isHighlighted: false, timestamp: 18000 },
-    { id: 8, text: "Do not worry if you need to pause - this is normal.", isHighlighted: false, timestamp: 21000 },
-    { id: 9, text: "The interview will begin automatically after these instructions.", isHighlighted: true, timestamp: 24000 },
-    { id: 10, text: "Good luck with your interview!", isHighlighted: false, timestamp: 27000 }
+    { id: 1, text: "Read these carefully", isHighlighted: true, timestamp: 0 },
+    { id: 2, text: "Instruction 1", isHighlighted: false, timestamp: 3000 },
+    { id: 3, text: "Instruction 2", isHighlighted: false, timestamp: 6000 },
+    { id: 4, text: "Instruction 3", isHighlighted: false, timestamp: 9000 },
+    { id: 5, text: "Instruction 4", isHighlighted: false, timestamp: 12000 },
+    { id: 6, text: "Welcome to your automated interview session.", isHighlighted: false, timestamp: 15000 },
+    { id: 7, text: "I am your virtual interviewer, and I will guide you through this process.", isHighlighted: false, timestamp: 18000 },
+    { id: 8, text: "Please ensure your microphone is working properly.", isHighlighted: true, timestamp: 21000 },
+    { id: 9, text: "This interview will be recorded for evaluation purposes.", isHighlighted: true, timestamp: 24000 },
+    { id: 10, text: "You will have 30 seconds to answer each question.", isHighlighted: true, timestamp: 27000 },
+    { id: 11, text: "Speak clearly and maintain eye contact with the camera.", isHighlighted: false, timestamp: 30000 },
+    { id: 12, text: "Take your time to think before responding.", isHighlighted: false, timestamp: 33000 },
+    { id: 13, text: "Do not worry if you need to pause - this is normal.", isHighlighted: false, timestamp: 36000 },
+    { id: 14, text: "The interview will begin automatically after these instructions.", isHighlighted: true, timestamp: 39000 },
+    { id: 15, text: "Good luck with your interview!", isHighlighted: false, timestamp: 42000 }
   ];
 
   useEffect(() => {
@@ -203,7 +208,7 @@ const InterviewIntroduction = () => {
                         key={line.id}
                         className={`p-3 rounded-lg transition-all duration-500 ${
                           isCurrentLine
-                            ? 'bg-primary/10 border-l-4 border-primary text-primary shadow-md scale-[1.02] animate-pulse'
+                            ? 'bg-primary/15 border-l-4 border-primary text-primary shadow-lg scale-[1.05] animate-pulse transform translate-x-2'
                             : line.isHighlighted 
                               ? 'bg-red-50 border-l-4 border-red-500 text-red-700 font-medium shadow-sm' 
                               : 'bg-slate-50 text-foreground'
