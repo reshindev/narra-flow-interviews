@@ -209,209 +209,169 @@ const InterviewIntroduction = () => {
           </div>
         </div>
 
-        {/* Right Panel - Interactive Step-by-Step Instructions */}
-        <div className="lg:col-span-3 flex flex-col justify-center space-y-6">
+        {/* Right Panel - Complete Instructions Overview */}
+        <div className="lg:col-span-3 flex flex-col space-y-6">
           
-          {/* Interactive Progress Header */}
+          {/* Header with Playback Controls */}
           <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 rounded-xl p-6 text-white shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-2xl font-bold">Interview Walkthrough</h2>
-                <p className="text-primary-foreground/90 text-sm">Step-by-step guidance for your success</p>
+                <h2 className="text-2xl font-bold">Interview Instructions</h2>
+                <p className="text-primary-foreground/90 text-sm">Complete overview of all interview guidelines</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <div className="text-2xl font-bold">{currentTranscriptIndex + 1}</div>
-                  <div className="text-xs opacity-75">of {transcriptLines.length}</div>
+              <div className="flex items-center gap-4">
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handlePlayPause}
+                    size="sm"
+                    className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                  >
+                    {isPlaying ? (
+                      <>
+                        <Pause className="w-4 h-4 mr-1" />
+                        Pause Audio
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-1" />
+                        Play Audio
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    onClick={handleReset}
+                    size="sm"
+                    variant="outline"
+                    className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                  >
+                    Reset
+                  </Button>
                 </div>
-                <div className="w-16 h-16 rounded-full border-3 border-white/30 flex items-center justify-center relative">
-                  <div 
-                    className="absolute inset-0 rounded-full border-3 border-white transition-all duration-500"
-                    style={{
-                      background: `conic-gradient(white ${(currentTranscriptIndex / transcriptLines.length) * 360}deg, transparent 0deg)`
-                    }}
-                  ></div>
-                  <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                    <div className="text-primary font-bold text-sm">
-                      {Math.round((currentTranscriptIndex / transcriptLines.length) * 100)}%
-                    </div>
+                {isPlaying && (
+                  <div className="flex items-center gap-2">
+                    <Volume2 className="w-4 h-4 animate-pulse" />
+                    <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
             
-            {/* Interactive Progress Dots */}
-            <div className="flex gap-2 overflow-x-auto pb-2">
-              {transcriptLines.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => !isPlaying && setCurrentTranscriptIndex(index)}
-                  disabled={isPlaying}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 flex-shrink-0 ${
-                    index <= currentTranscriptIndex
-                      ? 'bg-white shadow-lg'
-                      : 'bg-white/30 hover:bg-white/50'
-                  } ${!isPlaying ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-                />
-              ))}
-            </div>
+            {/* Audio Progress */}
+            {isPlaying && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span>Playing instruction {currentTranscriptIndex + 1} of {transcriptLines.length}</span>
+                  <span>{Math.round((currentTranscriptIndex / transcriptLines.length) * 100)}%</span>
+                </div>
+                <div className="h-1 bg-white/20 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-white transition-all duration-500"
+                    style={{ width: `${(currentTranscriptIndex / transcriptLines.length) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Main Interactive Content */}
-          <Card className="bg-white border-0 shadow-2xl overflow-hidden">
+          {/* All Instructions Card */}
+          <Card className="bg-white border-0 shadow-2xl overflow-hidden h-[600px] flex flex-col">
             
-            {/* Current Step Display */}
-            <div className="bg-gradient-to-r from-slate-50 to-slate-100 p-6 border-b">
-              <div className="flex items-center gap-3 mb-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                  transcriptLines[currentTranscriptIndex]?.isHighlighted 
-                    ? 'bg-red-500' 
-                    : transcriptLines[currentTranscriptIndex]?.isEncouragement 
-                      ? 'bg-blue-500' 
-                      : 'bg-primary'
-                }`}>
-                  {currentTranscriptIndex + 1}
+            {/* Instructions Header */}
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 p-4 border-b flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">Complete Interview Guidelines</h3>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span>Critical</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span>Encouragement</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  {transcriptLines[currentTranscriptIndex]?.isHighlighted && (
-                    <Badge variant="destructive" className="bg-red-500 text-white animate-pulse">
-                      Critical
-                    </Badge>
-                  )}
-                  {transcriptLines[currentTranscriptIndex]?.isEncouragement && (
-                    <Badge className="bg-blue-500 text-white">
-                      Motivation
-                    </Badge>
-                  )}
-                  {isPlaying && currentTranscriptIndex < transcriptLines.length && (
-                    <>
-                      <Volume2 className="w-4 h-4 text-primary animate-pulse" />
-                      <div className="w-2 h-2 bg-primary rounded-full animate-ping"></div>
-                    </>
-                  )}
-                </div>
-              </div>
-              
-              <div className={`text-lg leading-relaxed font-medium transition-all duration-500 ${
-                transcriptLines[currentTranscriptIndex]?.isHighlighted 
-                  ? 'text-red-700' 
-                  : transcriptLines[currentTranscriptIndex]?.isEncouragement 
-                    ? 'text-blue-700' 
-                    : 'text-foreground'
-              }`}>
-                {transcriptLines[currentTranscriptIndex]?.text || "Ready to begin!"}
               </div>
             </div>
 
-            {/* Interactive Controls */}
-            <div className="p-6 bg-white">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                
-                {/* Navigation Controls */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Navigation</h4>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => setCurrentTranscriptIndex(Math.max(0, currentTranscriptIndex - 1))}
-                      disabled={currentTranscriptIndex === 0 || isPlaying}
-                      size="sm"
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      <ChevronUp className="w-4 h-4 mr-1" />
-                      Previous
-                    </Button>
-                    <Button
-                      onClick={() => setCurrentTranscriptIndex(Math.min(transcriptLines.length - 1, currentTranscriptIndex + 1))}
-                      disabled={currentTranscriptIndex === transcriptLines.length - 1 || isPlaying}
-                      size="sm"
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Next
-                      <ChevronDown className="w-4 h-4 ml-1" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Playback Controls */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Playback</h4>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handlePlayPause}
-                      size="sm"
-                      className="flex-1 bg-gradient-to-r from-primary to-primary/90"
-                    >
-                      {isPlaying ? (
-                        <>
-                          <Pause className="w-4 h-4 mr-1" />
-                          Pause
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-4 h-4 mr-1" />
-                          Play
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      onClick={handleReset}
-                      size="sm"
-                      variant="outline"
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Status Indicator */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Status</h4>
-                  <div className={`p-3 rounded-lg text-sm font-medium ${
-                    currentTranscriptIndex === transcriptLines.length - 1
-                      ? 'bg-green-50 text-green-700 border border-green-200'
-                      : isPlaying
-                        ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                        : 'bg-slate-50 text-slate-700 border border-slate-200'
+            {/* Scrollable Instructions List */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {transcriptLines.map((line, index) => (
+                <div
+                  key={line.id}
+                  className={`flex items-start gap-4 p-4 rounded-lg transition-all duration-300 ${
+                    index === currentTranscriptIndex && isPlaying
+                      ? 'bg-primary/10 border-2 border-primary/30 shadow-md'
+                      : line.isHighlighted
+                        ? 'bg-red-50 border border-red-200 hover:bg-red-100'
+                        : line.isEncouragement
+                          ? 'bg-blue-50 border border-blue-200 hover:bg-blue-100'
+                          : 'bg-slate-50 border border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  {/* Instruction Number */}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 ${
+                    index === currentTranscriptIndex && isPlaying
+                      ? 'bg-primary animate-pulse'
+                      : line.isHighlighted
+                        ? 'bg-red-500'
+                        : line.isEncouragement
+                          ? 'bg-blue-500'
+                          : 'bg-slate-400'
                   }`}>
-                    {currentTranscriptIndex === transcriptLines.length - 1
-                      ? '✓ Ready to start'
-                      : isPlaying
-                        ? '🎵 Playing instructions'
-                        : '⏸ Paused'
-                    }
+                    {index + 1}
+                  </div>
+                  
+                  {/* Instruction Content */}
+                  <div className="flex-1">
+                    <div className="flex items-start gap-2 mb-2">
+                      {line.isHighlighted && (
+                        <Badge variant="destructive" className="bg-red-500 text-white text-xs">
+                          Critical
+                        </Badge>
+                      )}
+                      {line.isEncouragement && (
+                        <Badge className="bg-blue-500 text-white text-xs">
+                          Motivation
+                        </Badge>
+                      )}
+                      {index === currentTranscriptIndex && isPlaying && (
+                        <div className="flex items-center gap-1">
+                          <Volume2 className="w-3 h-3 text-primary animate-pulse" />
+                          <span className="text-xs text-primary font-medium">Playing</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <p className={`leading-relaxed ${
+                      index === currentTranscriptIndex && isPlaying
+                        ? 'text-primary font-medium'
+                        : line.isHighlighted
+                          ? 'text-red-700'
+                          : line.isEncouragement
+                            ? 'text-blue-700'
+                            : 'text-foreground'
+                    }`}>
+                      {line.text}
+                    </p>
                   </div>
                 </div>
-              </div>
-
-              {/* Interactive Checklist Preview */}
-              <div className="border-t pt-6">
-                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-3">Key Points to Remember</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {transcriptLines.filter(line => line.isHighlighted).slice(0, 4).map((line, index) => (
-                    <div
-                      key={line.id}
-                      className={`flex items-start gap-3 p-3 rounded-lg transition-all duration-300 ${
-                        currentTranscriptIndex >= line.id - 1
-                          ? 'bg-red-50 border border-red-200'
-                          : 'bg-slate-50 border border-slate-200'
-                      }`}
-                    >
-                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold mt-0.5 ${
-                        currentTranscriptIndex >= line.id - 1
-                          ? 'bg-red-500 text-white'
-                          : 'bg-slate-300 text-slate-600'
-                      }`}>
-                        {currentTranscriptIndex >= line.id - 1 ? '✓' : index + 1}
-                      </div>
-                      <p className={`text-xs leading-relaxed ${
-                        currentTranscriptIndex >= line.id - 1 ? 'text-red-700' : 'text-slate-600'
-                      }`}>
-                        {line.text}
-                      </p>
-                    </div>
-                  ))}
+              ))}
+            </div>
+            
+            {/* Quick Summary Footer */}
+            <div className="bg-gradient-to-r from-slate-50 to-slate-100 p-4 border-t flex-shrink-0">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-red-600">{transcriptLines.filter(line => line.isHighlighted).length}</div>
+                  <div className="text-xs text-muted-foreground">Critical Points</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-blue-600">{transcriptLines.filter(line => line.isEncouragement).length}</div>
+                  <div className="text-xs text-muted-foreground">Encouragements</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-slate-600">{transcriptLines.length}</div>
+                  <div className="text-xs text-muted-foreground">Total Instructions</div>
                 </div>
               </div>
             </div>
