@@ -240,16 +240,16 @@ const InterviewIntroduction = () => {
           </div>
 
           {/* Instructions Grid - Takes remaining space */}
-          <div className="flex-1 overflow-hidden relative">
+          <div className="flex-1 overflow-hidden relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm">
             <div 
-              className="h-full overflow-y-auto pr-2 scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-primary/30 hover:scrollbar-thumb-primary/50 scrollbar-thumb-rounded-full"
+              className="h-full overflow-y-auto p-4 scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-primary/30 hover:scrollbar-thumb-primary/50 scrollbar-thumb-rounded-full"
               style={{ 
-                maxHeight: 'calc(100vh - 280px)',
+                maxHeight: 'calc(100vh - 340px)',
                 scrollbarWidth: 'thin',
                 scrollbarColor: 'hsl(var(--primary) / 0.3) hsl(var(--slate-100))'
               }}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {transcriptLines.map((line, index) => (
                   <div
                     key={line.id}
@@ -323,16 +323,33 @@ const InterviewIntroduction = () => {
                 ))}
               </div>
             </div>
-            
-            {/* Start Interview Button - Positioned at bottom right */}
-            <div className="absolute bottom-4 right-4">
-              <Button 
-                size="lg"
-                className="bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary text-primary-foreground shadow-xl px-6 py-3 text-base font-semibold transition-all duration-300"
-              >
-                <Mic className="w-5 h-5 mr-2" />
-                Start Interview
-              </Button>
+          </div>
+
+          {/* Start Interview Button - Integrated Design */}
+          <div className="flex-shrink-0 mt-4">
+            <div className="relative">
+              {/* Button Container with Gradient Background */}
+              <div className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 rounded-2xl p-6 border border-primary/20 backdrop-blur-sm">
+                <div className="text-center space-y-3">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    <span className="text-primary font-medium text-sm">Ready to begin?</span>
+                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-300"></div>
+                  </div>
+                  <Button 
+                    size="lg"
+                    className="bg-gradient-to-r from-primary via-primary/95 to-primary hover:from-primary/90 hover:via-primary/85 hover:to-primary/90 text-primary-foreground shadow-2xl px-8 py-4 text-lg font-bold transition-all duration-500 transform hover:scale-105 hover:shadow-primary/25 group relative overflow-hidden"
+                  >
+                    {/* Button shine effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    <Mic className="w-6 h-6 mr-3 animate-pulse" />
+                    <span className="relative z-10">Start Interview</span>
+                  </Button>
+                  <p className="text-muted-foreground text-xs">
+                    Click when you're ready to begin the assessment
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
