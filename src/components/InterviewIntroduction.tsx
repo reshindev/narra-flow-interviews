@@ -204,21 +204,19 @@ const InterviewIntroduction = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Button
-                  onClick={handlePlayPause}
+                  onClick={() => {
+                    setCurrentTranscriptIndex(0);
+                    setInstructionsCompleted(false);
+                    setIsPlaying(true);
+                    if ('speechSynthesis' in window) {
+                      speechSynthesis.cancel();
+                    }
+                  }}
                   size="sm"
                   className="bg-white/20 hover:bg-white/30 text-white border-white/30"
                 >
-                  {isPlaying ? (
-                    <>
-                      <Pause className="w-4 h-4 mr-1" />
-                      Pause
-                    </>
-                  ) : (
-                    <>
-                      <Play className="w-4 h-4 mr-1" />
-                      Resume
-                    </>
-                  )}
+                  <Play className="w-4 h-4 mr-1" />
+                  Replay
                 </Button>
                 {isPlaying && (
                   <div className="flex items-center gap-2">
