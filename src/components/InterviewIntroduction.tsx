@@ -137,7 +137,7 @@ const InterviewIntroduction = () => {
                       {/* Avatar Image Container */}
                       <div className="w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border-4 border-white/70 shadow-lg">
                         <img 
-                          src="/lovable-uploads/75c387e3-3826-4a49-b77a-43b8e85d2165.png" 
+                          src="/joanna-avatar.jpg" 
                           alt="Joanna - AI Interviewer"
                           className="w-full h-full object-cover"
                         />
