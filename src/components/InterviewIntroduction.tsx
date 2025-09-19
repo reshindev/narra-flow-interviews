@@ -228,9 +228,9 @@ const InterviewIntroduction = () => {
               <CarouselContent className="h-full">
                 {transcriptLines.map((line, index) => (
                   <CarouselItem key={line.id} className="h-full">
-                    <div className="h-full flex items-center justify-center p-4">
+                    <div className="h-full flex items-center justify-center">
                       <div
-                        className={`group relative p-8 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl max-w-2xl w-full ${
+                        className={`group relative p-8 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl max-w-2xl w-full h-96 flex flex-col justify-between ${
                           index === currentTranscriptIndex && isPlaying
                             ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105'
                             : line.isHighlighted
@@ -241,7 +241,7 @@ const InterviewIntroduction = () => {
                         }`}
                       >
                         {/* Card Header */}
-                        <div className="flex items-center gap-4 mb-6">
+                        <div className="flex items-center gap-4 mb-4 flex-shrink-0">
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg ${
                             index === currentTranscriptIndex && isPlaying
                               ? 'bg-primary animate-pulse shadow-primary/30'
@@ -281,35 +281,19 @@ const InterviewIntroduction = () => {
                           )}
                         </div>
                         
-                        {/* Card Content */}
-                        <p className={`text-lg leading-relaxed text-center ${
-                          index === currentTranscriptIndex && isPlaying
-                            ? 'text-primary font-semibold'
-                            : line.isHighlighted
-                              ? 'text-red-700 font-semibold'
-                              : line.isEncouragement
-                                ? 'text-blue-700 font-semibold'
-                                : 'text-slate-700 font-medium'
-                        }`}>
-                          {line.text}
-                        </p>
-                        
-                        {/* Progress indicator */}
-                        <div className="mt-6 flex justify-center">
-                          <div className="flex gap-2">
-                            {transcriptLines.map((_, i) => (
-                              <div
-                                key={i}
-                                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                  i === index
-                                    ? 'bg-primary scale-125'
-                                    : i < index
-                                      ? 'bg-primary/60'
-                                      : 'bg-slate-200'
-                                }`}
-                              />
-                            ))}
-                          </div>
+                        {/* Card Content - Flexible Height */}
+                        <div className="flex-1 flex items-center justify-center">
+                          <p className={`text-lg leading-relaxed text-center ${
+                            index === currentTranscriptIndex && isPlaying
+                              ? 'text-primary font-semibold'
+                              : line.isHighlighted
+                                ? 'text-red-700 font-semibold'
+                                : line.isEncouragement
+                                  ? 'text-blue-700 font-semibold'
+                                  : 'text-slate-700 font-medium'
+                          }`}>
+                            {line.text}
+                          </p>
                         </div>
                         
                         {/* Hover Replay Button */}
@@ -335,6 +319,100 @@ const InterviewIntroduction = () => {
                 ))}
               </CarouselContent>
             </Carousel>
+          </div>
+
+          {/* Instruction Slider Control */}
+          <div className="flex-shrink-0 mt-4 bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-slate-200/50">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-slate-600">
+                Instruction {currentTranscriptIndex + 1} of {transcriptLines.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => {
+                    if (currentTranscriptIndex > 0) {
+                      const newIndex = currentTranscriptIndex - 1;
+                      setCurrentTranscriptIndex(newIndex);
+                      carouselApi?.scrollTo(newIndex);
+                      if ('speechSynthesis' in window) {
+                        speechSynthesis.cancel();
+                        const utterance = new SpeechSynthesisUtterance(transcriptLines[newIndex].text);
+                        utterance.rate = 0.9;
+                        utterance.pitch = 1.1;
+                        speechSynthesis.speak(utterance);
+                      }
+                    }
+                  }}
+                  disabled={currentTranscriptIndex === 0 || (!instructionsCompleted && isPlaying)}
+                  size="sm"
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (currentTranscriptIndex < transcriptLines.length - 1) {
+                      const newIndex = currentTranscriptIndex + 1;
+                      setCurrentTranscriptIndex(newIndex);
+                      carouselApi?.scrollTo(newIndex);
+                      if ('speechSynthesis' in window) {
+                        speechSynthesis.cancel();
+                        const utterance = new SpeechSynthesisUtterance(transcriptLines[newIndex].text);
+                        utterance.rate = 0.9;
+                        utterance.pitch = 1.1;
+                        speechSynthesis.speak(utterance);
+                      }
+                    }
+                  }}
+                  disabled={currentTranscriptIndex === transcriptLines.length - 1 || (!instructionsCompleted && isPlaying)}
+                  size="sm"
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            
+            {/* Progress Slider */}
+            <div className="relative">
+              <input
+                type="range"
+                min={0}
+                max={transcriptLines.length - 1}
+                value={currentTranscriptIndex}
+                onChange={(e) => {
+                  const newIndex = parseInt(e.target.value);
+                  setCurrentTranscriptIndex(newIndex);
+                  carouselApi?.scrollTo(newIndex);
+                  if ('speechSynthesis' in window) {
+                    speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(transcriptLines[newIndex].text);
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.1;
+                    speechSynthesis.speak(utterance);
+                  }
+                }}
+                disabled={!instructionsCompleted && isPlaying}
+                className={`w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer transition-opacity ${
+                  !instructionsCompleted && isPlaying ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                }`}
+                style={{
+                  background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((currentTranscriptIndex) / (transcriptLines.length - 1)) * 100}%, #e2e8f0 ${((currentTranscriptIndex) / (transcriptLines.length - 1)) * 100}%, #e2e8f0 100%)`
+                }}
+              />
+              <div className="flex justify-between mt-2 px-1">
+                <span className="text-xs text-slate-500">Start</span>
+                <span className="text-xs text-slate-500">End</span>
+              </div>
+            </div>
+            
+            {!instructionsCompleted && isPlaying && (
+              <p className="text-xs text-slate-500 mt-2 text-center">
+                Slider will be enabled after completing the initial playthrough
+              </p>
+            )}
           </div>
 
           {/* Start Interview Button */}
