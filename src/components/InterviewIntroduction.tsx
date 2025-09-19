@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel';
 import { Play, Pause, Volume2, Mic, ChevronUp, ChevronDown, MoreVertical } from 'lucide-react';
 
 interface TranscriptLine {
@@ -15,8 +16,8 @@ interface TranscriptLine {
 const InterviewIntroduction = () => {
   const [isPlaying, setIsPlaying] = useState(true); // Auto-start
   const [currentTranscriptIndex, setCurrentTranscriptIndex] = useState(0);
-  const [scrollPosition, setScrollPosition] = useState(0);
   const [instructionsCompleted, setInstructionsCompleted] = useState(false);
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const speechRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const transcriptLines: TranscriptLine[] = [
@@ -37,7 +38,12 @@ const InterviewIntroduction = () => {
     { id: 15, text: "Click the Start Interview button below to begin.", isHighlighted: false, isEncouragement: false, timestamp: 42000 }
   ];
 
-  const VISIBLE_ITEMS = 5;
+  // Auto-scroll carousel to current instruction
+  useEffect(() => {
+    if (carouselApi && currentTranscriptIndex >= 0) {
+      carouselApi.scrollTo(currentTranscriptIndex);
+    }
+  }, [carouselApi, currentTranscriptIndex]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -80,15 +86,6 @@ const InterviewIntroduction = () => {
     };
   }, [isPlaying, transcriptLines]);
 
-  // Auto-scroll to keep current line visible
-  useEffect(() => {
-    if (isPlaying && currentTranscriptIndex >= scrollPosition + VISIBLE_ITEMS) {
-      setScrollPosition(currentTranscriptIndex - VISIBLE_ITEMS + 1);
-    } else if (isPlaying && currentTranscriptIndex < scrollPosition) {
-      setScrollPosition(currentTranscriptIndex);
-    }
-  }, [currentTranscriptIndex, isPlaying, scrollPosition]);
-
   const handlePlayPause = () => {
     if (isPlaying && 'speechSynthesis' in window) {
       speechSynthesis.cancel();
@@ -96,15 +93,6 @@ const InterviewIntroduction = () => {
     setIsPlaying(!isPlaying);
   };
 
-  const handleScrollUp = () => {
-    setScrollPosition(prev => Math.max(0, prev - 1));
-  };
-
-  const handleScrollDown = () => {
-    setScrollPosition(prev => Math.min(transcriptLines.length - VISIBLE_ITEMS, prev + 1));
-  };
-
-  const visibleLines = transcriptLines.slice(scrollPosition, scrollPosition + VISIBLE_ITEMS);
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 overflow-hidden">
@@ -227,90 +215,126 @@ const InterviewIntroduction = () => {
             </div>
           </div>
 
-          {/* Instructions Grid */}
-          <div className="flex-1 overflow-hidden relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm">
-            <div 
-              className="h-full overflow-y-auto p-4 scrollbar-thin scrollbar-track-slate-100 scrollbar-thumb-primary/30 hover:scrollbar-thumb-primary/50 scrollbar-thumb-rounded-full"
-              style={{ 
-                maxHeight: 'calc(100vh - 340px)',
-                scrollbarWidth: 'thin',
-                scrollbarColor: 'hsl(var(--primary) / 0.3) hsl(var(--slate-100))'
+          {/* Instructions Carousel */}
+          <div className="flex-1 relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm p-6">
+            <Carousel
+              opts={{
+                align: "start",
+                loop: false,
               }}
+              setApi={setCarouselApi}
+              className="w-full h-full"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <CarouselContent className="h-full">
                 {transcriptLines.map((line, index) => (
-                  <div
-                    key={line.id}
-                    className={`group relative p-4 rounded-lg border transition-all duration-300 hover:shadow-md ${
-                      index === currentTranscriptIndex && isPlaying
-                        ? 'bg-primary/10 border-primary/40 shadow-lg ring-2 ring-primary/20'
-                        : line.isHighlighted
-                          ? 'bg-red-50 border-red-200 hover:bg-red-100'
-                          : line.isEncouragement
-                            ? 'bg-blue-50 border-blue-200 hover:bg-blue-100'
-                            : 'bg-white border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    {/* Card Header */}
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0 ${
-                        index === currentTranscriptIndex && isPlaying
-                          ? 'bg-primary animate-pulse'
-                          : line.isHighlighted
-                            ? 'bg-red-500'
-                            : line.isEncouragement
-                              ? 'bg-blue-500'
-                              : 'bg-slate-400'
-                      }`}>
-                        {index + 1}
-                      </div>
-                      
-                      {index === currentTranscriptIndex && isPlaying && (
-                        <div className="flex items-center gap-1">
-                          <Volume2 className="w-3 h-3 text-primary animate-pulse" />
-                          <div className="w-1 h-1 bg-primary rounded-full animate-ping"></div>
+                  <CarouselItem key={line.id} className="h-full">
+                    <div className="h-full flex items-center justify-center p-4">
+                      <div
+                        className={`group relative p-8 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl max-w-2xl w-full ${
+                          index === currentTranscriptIndex && isPlaying
+                            ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105'
+                            : line.isHighlighted
+                              ? 'bg-red-50 border-red-200 hover:bg-red-100 shadow-lg'
+                              : line.isEncouragement
+                                ? 'bg-blue-50 border-blue-200 hover:bg-blue-100 shadow-lg'
+                                : 'bg-white border-slate-200 hover:bg-slate-50 shadow-lg'
+                        }`}
+                      >
+                        {/* Card Header */}
+                        <div className="flex items-center gap-4 mb-6">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg ${
+                            index === currentTranscriptIndex && isPlaying
+                              ? 'bg-primary animate-pulse shadow-primary/30'
+                              : line.isHighlighted
+                                ? 'bg-red-500 shadow-red/30'
+                                : line.isEncouragement
+                                  ? 'bg-blue-500 shadow-blue/30'
+                                  : 'bg-slate-400 shadow-slate/30'
+                          }`}>
+                            {index + 1}
+                          </div>
+                          
+                          {index === currentTranscriptIndex && isPlaying && (
+                            <div className="flex items-center gap-3">
+                              <Volume2 className="w-5 h-5 text-primary animate-pulse" />
+                              <div className="flex gap-1">
+                                <div className="w-2 h-2 bg-primary rounded-full animate-ping"></div>
+                                <div className="w-2 h-2 bg-primary rounded-full animate-ping delay-100"></div>
+                                <div className="w-2 h-2 bg-primary rounded-full animate-ping delay-200"></div>
+                              </div>
+                              <span className="text-primary font-semibold text-sm">Playing...</span>
+                            </div>
+                          )}
+                          
+                          {line.isHighlighted && (
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                              <span className="text-red-600 font-medium text-sm">Important</span>
+                            </div>
+                          )}
+                          
+                          {line.isEncouragement && (
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                              <span className="text-blue-600 font-medium text-sm">Encouragement</span>
+                            </div>
+                          )}
                         </div>
-                      )}
-                      
-                      {line.isHighlighted && (
-                        <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                      )}
+                        
+                        {/* Card Content */}
+                        <p className={`text-lg leading-relaxed text-center ${
+                          index === currentTranscriptIndex && isPlaying
+                            ? 'text-primary font-semibold'
+                            : line.isHighlighted
+                              ? 'text-red-700 font-semibold'
+                              : line.isEncouragement
+                                ? 'text-blue-700 font-semibold'
+                                : 'text-slate-700 font-medium'
+                        }`}>
+                          {line.text}
+                        </p>
+                        
+                        {/* Progress indicator */}
+                        <div className="mt-6 flex justify-center">
+                          <div className="flex gap-2">
+                            {transcriptLines.map((_, i) => (
+                              <div
+                                key={i}
+                                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                  i === index
+                                    ? 'bg-primary scale-125'
+                                    : i < index
+                                      ? 'bg-primary/60'
+                                      : 'bg-slate-200'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Hover Replay Button */}
+                        <button
+                          onClick={() => {
+                            setCurrentTranscriptIndex(index);
+                            if ('speechSynthesis' in window) {
+                              speechSynthesis.cancel();
+                              const utterance = new SpeechSynthesisUtterance(line.text);
+                              utterance.rate = 0.9;
+                              utterance.pitch = 1.1;
+                              speechSynthesis.speak(utterance);
+                            }
+                          }}
+                          className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 rounded-full bg-white/90 hover:bg-white shadow-lg hover:shadow-xl"
+                          title="Replay this instruction"
+                        >
+                          <Play className="w-4 h-4 text-slate-600" />
+                        </button>
+                      </div>
                     </div>
-                    
-                    {/* Card Content */}
-                    <p className={`text-sm leading-relaxed ${
-                      index === currentTranscriptIndex && isPlaying
-                        ? 'text-primary font-medium'
-                        : line.isHighlighted
-                          ? 'text-red-700 font-medium'
-                          : line.isEncouragement
-                            ? 'text-blue-700 font-medium'
-                            : 'text-slate-700'
-                    }`}>
-                      {line.text}
-                    </p>
-                    
-                    {/* Hover Replay Button */}
-                    <button
-                      onClick={() => {
-                        setCurrentTranscriptIndex(index);
-                        if ('speechSynthesis' in window) {
-                          speechSynthesis.cancel();
-                          const utterance = new SpeechSynthesisUtterance(line.text);
-                          utterance.rate = 0.9;
-                          utterance.pitch = 1.1;
-                          speechSynthesis.speak(utterance);
-                        }
-                      }}
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded-full bg-white/80 hover:bg-white shadow-sm"
-                      title="Replay this instruction"
-                    >
-                      <Play className="w-3 h-3 text-slate-600" />
-                    </button>
-                  </div>
+                  </CarouselItem>
                 ))}
-              </div>
-            </div>
+              </CarouselContent>
+            </Carousel>
           </div>
 
           {/* Start Interview Button */}
