@@ -261,7 +261,7 @@ const InterviewIntroduction = () => {
               <CarouselContent className="h-full">
                 {transcriptLines.map((line, index) => (
                   <CarouselItem key={line.id} className="h-full">
-                    <div className="h-full flex items-stretch justify-center p-2">
+                    <div className="h-full flex items-stretch justify-center">
                       <div
                         className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full flex flex-col justify-between ${
                           index === currentTranscriptIndex && isPlaying
