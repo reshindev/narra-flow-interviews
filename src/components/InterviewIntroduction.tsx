@@ -257,7 +257,7 @@ const InterviewIntroduction = () => {
                   <CarouselItem key={line.id} className="h-full">
                     <div className="h-full flex items-stretch justify-center">
                       <div
-                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full min-h-[280px] flex flex-col justify-between ${
+                        className={`group relative rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full min-h-[280px] flex items-center justify-center ${
                           index === currentTranscriptIndex && isPlaying
                             ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105'
                             : line.isHighlighted
@@ -267,8 +267,8 @@ const InterviewIntroduction = () => {
                                 : 'bg-white border-slate-200 hover:bg-slate-50 shadow-lg'
                         }`}
                       >
-                        {/* Card Header */}
-                        <div className="flex items-center gap-4 mb-4 flex-shrink-0">
+                        {/* Card Header - Positioned absolutely */}
+                        <div className="absolute top-4 left-4 flex items-center gap-4">
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg ${
                             index === currentTranscriptIndex && isPlaying
                               ? 'bg-primary animate-pulse shadow-primary/30'
@@ -292,24 +292,25 @@ const InterviewIntroduction = () => {
                               <span className="text-primary font-semibold text-sm">Playing...</span>
                             </div>
                           )}
-                          
-                          {line.isHighlighted && (
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                              <span className="text-red-600 font-medium text-sm">Important</span>
-                            </div>
-                          )}
-                          
-                          {line.isEncouragement && (
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                              <span className="text-blue-600 font-medium text-sm">Encouragement</span>
-                            </div>
-                          )}
                         </div>
                         
-                        {/* Card Content - Centered */}
-                        <div className="flex-1 flex items-center justify-center px-4">
+                        {/* Status badges - Positioned absolutely */}
+                        {line.isHighlighted && (
+                          <div className="absolute top-4 right-16 flex items-center gap-2">
+                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            <span className="text-red-600 font-medium text-sm">Important</span>
+                          </div>
+                        )}
+                        
+                        {line.isEncouragement && (
+                          <div className="absolute top-4 right-16 flex items-center gap-2">
+                            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                            <span className="text-blue-600 font-medium text-sm">Encouragement</span>
+                          </div>
+                        )}
+
+                        {/* Card Content - Absolutely Centered */}
+                        <div className="px-8">
                           <p className={`text-lg leading-relaxed text-center ${
                             index === currentTranscriptIndex && isPlaying
                               ? 'text-primary font-semibold'
