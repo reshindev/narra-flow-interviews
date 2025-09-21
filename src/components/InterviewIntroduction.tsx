@@ -263,7 +263,7 @@ const InterviewIntroduction = () => {
                   <CarouselItem key={line.id} className="h-full">
                     <div className="h-full flex items-stretch justify-center">
                       <div
-                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full min-h-[500px] flex flex-col justify-between ${
+                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full min-h-[400px] flex flex-col justify-between ${
                           index === currentTranscriptIndex && isPlaying
                             ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105'
                             : line.isHighlighted
