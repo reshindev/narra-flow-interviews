@@ -249,7 +249,7 @@ const InterviewIntroduction = () => {
           </div>
 
           {/* Instructions Carousel */}
-          <div className="flex-1 relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm p-4 min-h-0">
+          <div className="flex-1 relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm overflow-hidden min-h-0">
             <Carousel
               opts={{
                 align: "start",
