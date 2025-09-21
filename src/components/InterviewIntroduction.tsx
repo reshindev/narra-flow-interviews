@@ -170,12 +170,6 @@ const InterviewIntroduction = () => {
               <p className="text-sm text-slate-600 leading-relaxed">
                 Your dedicated AI interviewer with advanced conversational abilities. Joanna has been trained to conduct professional interviews with empathy and precision, ensuring a comprehensive assessment of your skills.
               </p>
-              <div className="flex items-center gap-2 text-xs text-primary">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-primary">
-                  Playing instructions...
-                </span>
-              </div>
             </div>
           </div>
         </div>
@@ -263,7 +257,7 @@ const InterviewIntroduction = () => {
                   <CarouselItem key={line.id} className="h-full">
                     <div className="h-full flex items-stretch justify-center">
                       <div
-                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full min-h-[320px] flex flex-col justify-between ${
+                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full min-h-[280px] flex flex-col justify-between ${
                           index === currentTranscriptIndex && isPlaying
                             ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105'
                             : line.isHighlighted
@@ -370,7 +364,7 @@ const InterviewIntroduction = () => {
                     <span className={`font-medium text-sm ${
                       instructionsCompleted ? 'text-primary' : 'text-slate-500'
                     }`}>
-                      {instructionsCompleted ? 'Ready to begin!' : 'Please wait for instructions to complete'}
+                      {instructionsCompleted ? 'Ready to begin!' : 'Playing instructions...'}
                     </span>
                     <div className={`w-2 h-2 rounded-full ${
                       instructionsCompleted ? 'bg-primary animate-pulse delay-300' : 'bg-slate-400'
