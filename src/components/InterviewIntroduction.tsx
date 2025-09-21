@@ -249,7 +249,7 @@ const InterviewIntroduction = () => {
           </div>
 
           {/* Instructions Carousel */}
-          <div className="flex-1 relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm overflow-hidden min-h-0">
+          <div className="flex-1 relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm p-4 min-h-0">
             <Carousel
               opts={{
                 align: "start",
@@ -263,7 +263,7 @@ const InterviewIntroduction = () => {
                   <CarouselItem key={line.id} className="h-full">
                     <div className="h-full flex items-stretch justify-center">
                       <div
-                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full flex flex-col justify-between ${
+                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full min-h-[500px] flex flex-col justify-between ${
                           index === currentTranscriptIndex && isPlaying
                             ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105'
                             : line.isHighlighted
