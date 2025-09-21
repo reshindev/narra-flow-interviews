@@ -95,14 +95,14 @@ const InterviewIntroduction = () => {
 
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 overflow-hidden">
-      <div className="max-w-7xl mx-auto h-full grid lg:grid-cols-3 gap-6">
+    <div className="h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-3 overflow-hidden">
+      <div className="max-w-6xl mx-auto h-full grid lg:grid-cols-3 gap-4">
         
         {/* Left Panel - AI Interviewer Section */}
-        <div className="lg:col-span-1 flex flex-col justify-between relative">
+        <div className="lg:col-span-1 flex flex-col justify-between relative max-h-full">
           
           {/* Top Section - Avatar */}
-          <div className="flex flex-col items-center justify-center flex-1">
+          <div className="flex flex-col items-center justify-center flex-1 min-h-0">
             {/* Enhanced Decorative Background */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
               <div className="absolute top-16 left-8 w-24 h-24 bg-gradient-to-br from-primary/15 to-primary/5 rounded-full blur-2xl animate-pulse"></div>
@@ -114,7 +114,7 @@ const InterviewIntroduction = () => {
             <div className="relative z-10 flex flex-col items-center">
               <div className="relative mb-6 flex justify-center">
                 {/* Multi-layered Circular Design */}
-                <div className="w-72 h-72 relative">
+                <div className="w-56 h-56 lg:w-64 lg:h-64 relative">
                   {/* Outer Glow Ring */}
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 via-primary/10 to-transparent animate-pulse"></div>
                   
@@ -183,9 +183,9 @@ const InterviewIntroduction = () => {
         {/* Right Panel - Instructions and Controls */}
         <div className="lg:col-span-2 flex flex-col h-full">
           
-          {/* Header */}
-          <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 rounded-xl p-4 text-white shadow-2xl flex-shrink-0 mb-4">
-            <div className="flex items-center justify-between">
+          {/* Header with integrated slider controls */}
+          <div className="bg-gradient-to-r from-primary via-primary/90 to-primary/80 rounded-xl p-4 text-white shadow-2xl flex-shrink-0 mb-3">
+            <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 className="text-xl font-bold">Interview Instructions</h2>
                 <p className="text-primary-foreground/90 text-sm">Listen carefully to all guidelines</p>
@@ -213,10 +213,43 @@ const InterviewIntroduction = () => {
                 )}
               </div>
             </div>
+            
+            {/* Integrated Instruction Slider */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-primary-foreground/90">
+                Instruction {currentTranscriptIndex + 1} of {transcriptLines.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => {
+                    const prevIndex = Math.max(0, currentTranscriptIndex - 1);
+                    setCurrentTranscriptIndex(prevIndex);
+                    if (carouselApi) carouselApi.scrollTo(prevIndex);
+                  }}
+                  disabled={currentTranscriptIndex === 0 || !instructionsCompleted}
+                  size="sm"
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={() => {
+                    const nextIndex = Math.min(transcriptLines.length - 1, currentTranscriptIndex + 1);
+                    setCurrentTranscriptIndex(nextIndex);
+                    if (carouselApi) carouselApi.scrollTo(nextIndex);
+                  }}
+                  disabled={currentTranscriptIndex === transcriptLines.length - 1 || !instructionsCompleted}
+                  size="sm"
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 disabled:opacity-50 disabled:cursor-not-allowed w-8 h-8 p-0"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Instructions Carousel */}
-          <div className="flex-1 relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm p-6">
+          <div className="flex-1 relative rounded-xl bg-white/50 border border-slate-200/50 backdrop-blur-sm p-4 min-h-0">
             <Carousel
               opts={{
                 align: "start",
@@ -230,7 +263,7 @@ const InterviewIntroduction = () => {
                   <CarouselItem key={line.id} className="h-full">
                     <div className="h-full flex items-center justify-center">
                       <div
-                        className={`group relative p-8 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl max-w-2xl w-full h-96 flex flex-col justify-between ${
+                        className={`group relative p-6 rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full max-h-96 flex flex-col justify-between ${
                           index === currentTranscriptIndex && isPlaying
                             ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105'
                             : line.isHighlighted
@@ -321,146 +354,16 @@ const InterviewIntroduction = () => {
             </Carousel>
           </div>
 
-          {/* Instruction Slider Control */}
-          <div className="flex-shrink-0 mt-4 bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-slate-200/50">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-slate-600">
-                Instruction {currentTranscriptIndex + 1} of {transcriptLines.length}
-              </span>
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => {
-                    if (currentTranscriptIndex > 0) {
-                      const newIndex = currentTranscriptIndex - 1;
-                      setCurrentTranscriptIndex(newIndex);
-                      carouselApi?.scrollTo(newIndex);
-                      if ('speechSynthesis' in window) {
-                        speechSynthesis.cancel();
-                        const utterance = new SpeechSynthesisUtterance(transcriptLines[newIndex].text);
-                        utterance.rate = 0.9;
-                        utterance.pitch = 1.1;
-                        speechSynthesis.speak(utterance);
-                      }
-                    }
-                  }}
-                  disabled={currentTranscriptIndex === 0 || (!instructionsCompleted && isPlaying)}
-                  size="sm"
-                  variant="outline"
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronUp className="h-4 w-4" />
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (currentTranscriptIndex < transcriptLines.length - 1) {
-                      const newIndex = currentTranscriptIndex + 1;
-                      setCurrentTranscriptIndex(newIndex);
-                      carouselApi?.scrollTo(newIndex);
-                      if ('speechSynthesis' in window) {
-                        speechSynthesis.cancel();
-                        const utterance = new SpeechSynthesisUtterance(transcriptLines[newIndex].text);
-                        utterance.rate = 0.9;
-                        utterance.pitch = 1.1;
-                        speechSynthesis.speak(utterance);
-                      }
-                    }
-                  }}
-                  disabled={currentTranscriptIndex === transcriptLines.length - 1 || (!instructionsCompleted && isPlaying)}
-                  size="sm"
-                  variant="outline"
-                  className="h-8 w-8 p-0"
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-            
-            {/* Progress Slider */}
-            <div className="relative">
-              <input
-                type="range"
-                min={0}
-                max={transcriptLines.length - 1}
-                value={currentTranscriptIndex}
-                onChange={(e) => {
-                  const newIndex = parseInt(e.target.value);
-                  setCurrentTranscriptIndex(newIndex);
-                  carouselApi?.scrollTo(newIndex);
-                  if ('speechSynthesis' in window) {
-                    speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance(transcriptLines[newIndex].text);
-                    utterance.rate = 0.9;
-                    utterance.pitch = 1.1;
-                    speechSynthesis.speak(utterance);
-                  }
-                }}
-                disabled={!instructionsCompleted && isPlaying}
-                className={`w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer transition-opacity ${
-                  !instructionsCompleted && isPlaying ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
-                }`}
-                style={{
-                  background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${((currentTranscriptIndex) / (transcriptLines.length - 1)) * 100}%, #e2e8f0 ${((currentTranscriptIndex) / (transcriptLines.length - 1)) * 100}%, #e2e8f0 100%)`
-                }}
-              />
-              <div className="flex justify-between mt-2 px-1">
-                <span className="text-xs text-slate-500">Start</span>
-                <span className="text-xs text-slate-500">End</span>
-              </div>
-            </div>
-            
-            {!instructionsCompleted && isPlaying && (
-              <p className="text-xs text-slate-500 mt-2 text-center">
-                Slider will be enabled after completing the initial playthrough
-              </p>
-            )}
-          </div>
-
           {/* Start Interview Button */}
-          <div className="flex-shrink-0 mt-4">
-            <div className="relative">
-              <div className={`rounded-2xl p-6 border backdrop-blur-sm transition-all duration-500 ${
-                instructionsCompleted 
-                  ? 'bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-primary/20' 
-                  : 'bg-slate-100/50 border-slate-200/50'
-              }`}>
-                <div className="text-center space-y-3">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      instructionsCompleted ? 'bg-primary animate-pulse' : 'bg-slate-400'
-                    }`}></div>
-                    <span className={`font-medium text-sm ${
-                      instructionsCompleted ? 'text-primary' : 'text-slate-500'
-                    }`}>
-                      {instructionsCompleted ? 'Ready to begin!' : 'Please wait for instructions to complete'}
-                    </span>
-                    <div className={`w-2 h-2 rounded-full ${
-                      instructionsCompleted ? 'bg-primary animate-pulse delay-300' : 'bg-slate-400'
-                    }`}></div>
-                  </div>
-                  <Button 
-                    size="lg"
-                    disabled={!instructionsCompleted}
-                    className={`px-8 py-4 text-lg font-bold transition-all duration-500 transform ${
-                      instructionsCompleted 
-                        ? 'bg-gradient-to-r from-primary via-primary/95 to-primary hover:from-primary/90 hover:via-primary/85 hover:to-primary/90 text-primary-foreground shadow-2xl hover:scale-105 hover:shadow-primary/25 group relative overflow-hidden' 
-                        : 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                    }`}
-                  >
-                    {instructionsCompleted && (
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                    )}
-                    <Mic className={`w-6 h-6 mr-3 ${instructionsCompleted ? 'animate-pulse' : ''}`} />
-                    <span className="relative z-10">Start Interview</span>
-                  </Button>
-                  <p className="text-muted-foreground text-xs">
-                    {instructionsCompleted 
-                      ? 'Click when you\'re ready to begin the assessment' 
-                      : 'Button will be enabled once all instructions are heard'
-                    }
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div className="flex-shrink-0 mt-3 text-center">
+            <Button 
+              disabled={!instructionsCompleted}
+              size="lg"
+              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3 rounded-xl shadow-2xl hover:shadow-primary/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Mic className="w-5 h-5 mr-2" />
+              {instructionsCompleted ? "Start Interview" : "Please wait for instructions to complete"}
+            </Button>
           </div>
         </div>
       </div>
