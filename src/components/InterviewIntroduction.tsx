@@ -308,8 +308,8 @@ const InterviewIntroduction = () => {
                           )}
                         </div>
                         
-                        {/* Card Content - Flexible Height */}
-                        <div className="flex-1 flex items-center justify-center">
+                        {/* Card Content - Centered */}
+                        <div className="flex-1 flex items-center justify-center px-4">
                           <p className={`text-lg leading-relaxed text-center ${
                             index === currentTranscriptIndex && isPlaying
                               ? 'text-primary font-semibold'
