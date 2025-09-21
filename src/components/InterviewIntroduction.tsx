@@ -355,15 +355,51 @@ const InterviewIntroduction = () => {
           </div>
 
           {/* Start Interview Button */}
-          <div className="flex-shrink-0 mt-3 text-center">
-            <Button 
-              disabled={!instructionsCompleted}
-              size="lg"
-              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-white font-semibold px-8 py-3 rounded-xl shadow-2xl hover:shadow-primary/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Mic className="w-5 h-5 mr-2" />
-              {instructionsCompleted ? "Start Interview" : "Please wait for instructions to complete"}
-            </Button>
+          <div className="flex-shrink-0 mt-3">
+            <div className="relative">
+              <div className={`rounded-2xl p-6 border backdrop-blur-sm transition-all duration-500 ${
+                instructionsCompleted 
+                  ? 'bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-primary/20' 
+                  : 'bg-slate-100/50 border-slate-200/50'
+              }`}>
+                <div className="text-center space-y-3">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className={`w-2 h-2 rounded-full ${
+                      instructionsCompleted ? 'bg-primary animate-pulse' : 'bg-slate-400'
+                    }`}></div>
+                    <span className={`font-medium text-sm ${
+                      instructionsCompleted ? 'text-primary' : 'text-slate-500'
+                    }`}>
+                      {instructionsCompleted ? 'Ready to begin!' : 'Please wait for instructions to complete'}
+                    </span>
+                    <div className={`w-2 h-2 rounded-full ${
+                      instructionsCompleted ? 'bg-primary animate-pulse delay-300' : 'bg-slate-400'
+                    }`}></div>
+                  </div>
+                  <Button 
+                    size="lg"
+                    disabled={!instructionsCompleted}
+                    className={`px-8 py-4 text-lg font-bold transition-all duration-500 transform ${
+                      instructionsCompleted 
+                        ? 'bg-gradient-to-r from-primary via-primary/95 to-primary hover:from-primary/90 hover:via-primary/85 hover:to-primary/90 text-primary-foreground shadow-2xl hover:scale-105 hover:shadow-primary/25 group relative overflow-hidden' 
+                        : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                    }`}
+                  >
+                    {instructionsCompleted && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                    )}
+                    <Mic className={`w-6 h-6 mr-3 ${instructionsCompleted ? 'animate-pulse' : ''}`} />
+                    <span className="relative z-10">Start Interview</span>
+                  </Button>
+                  <p className="text-muted-foreground text-xs">
+                    {instructionsCompleted 
+                      ? 'Click when you\'re ready to begin the assessment' 
+                      : 'Button will be enabled once all instructions are heard'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
