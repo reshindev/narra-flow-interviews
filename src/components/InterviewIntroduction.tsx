@@ -255,11 +255,11 @@ const InterviewIntroduction = () => {
               <CarouselContent className="h-full">
                 {transcriptLines.map((line, index) => (
                   <CarouselItem key={line.id} className="h-full">
-                    <div className="h-full flex items-center justify-center">
+                    <div className="h-full flex items-stretch justify-center">
                       <div
-                        className={`group relative rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full flex items-center justify-center ${
+                        className={`group relative rounded-2xl border-2 transition-all duration-500 hover:shadow-xl w-full h-full min-h-[280px] flex items-center justify-center ${
                           index === currentTranscriptIndex && isPlaying
-                            ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105 p-6'
+                            ? 'bg-primary/10 border-primary/40 shadow-2xl ring-4 ring-primary/20 scale-105'
                             : line.isHighlighted
                               ? 'bg-red-50 border-red-200 hover:bg-red-100 shadow-lg'
                               : line.isEncouragement
